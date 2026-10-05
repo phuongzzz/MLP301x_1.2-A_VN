@@ -65,8 +65,10 @@ def report(df, valid_count, invalid_count):
     print(f"Range of scores: {np.max(s) - np.min(s)}")
     print(f"Median score: {np.median(s):g}")
 
+# Task 4
 if __name__ == "__main__":
     name, lines = open_class_file()
     valid, invalid_count = analyze(lines)
     df = grade(valid)
     report(df, len(valid), invalid_count)
+    df.to_csv(f"{name}_grades.txt", header=False, index=False)

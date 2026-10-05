@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+ANSWER_KEY = np.array("B,A,D,D,C,B,D,A,C,C,D,B,A,B,A,C,B,D,A,C,A,A,B,D,D".split(","))
+
 # Task 1
 def open_class_file():
     while True:
@@ -37,12 +39,34 @@ def analyze(lines):
         print("No errors found!")
     return valid, invalid_count
 
-def report(valid_count, invalid_count):
+# Task 3
+def grade(valid):
+    ids, scores = [], []
+    for values in valid:
+        answers = np.array(values[1:])
+        correct = np.sum(answers == ANSWER_KEY)
+        skipped = np.sum(answers == "")
+        wrong = 25 - correct - skipped
+        ids.append(values[0])
+        scores.append(int(4 * correct - wrong))
+    return pd.DataFrame({"id": ids, "score": scores})
+
+
+def report(df, valid_count, invalid_count):
     print("**** REPORT ****")
     print(f"Total valid lines of data: {valid_count}")
     print(f"Total invalid lines of data: {invalid_count}")
+    if valid_count == 0:
+        return
+    s = df["score"].to_numpy()
+    print(f"Mean (average) score: {np.mean(s):.2f}")
+    print(f"Highest score: {np.max(s)}")
+    print(f"Lowest score: {np.min(s)}")
+    print(f"Range of scores: {np.max(s) - np.min(s)}")
+    print(f"Median score: {np.median(s):g}")
 
 if __name__ == "__main__":
     name, lines = open_class_file()
     valid, invalid_count = analyze(lines)
-    report(len(valid), invalid_count)
+    df = grade(valid)
+    report(df, len(valid), invalid_count)
